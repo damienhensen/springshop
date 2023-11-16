@@ -14,14 +14,14 @@ export default function Layout({ children }) {
           <Link href="/admin">Support</Link>
         </aside>
 
-        <div className="flex-1 flex flex-col h-screen">
+        <div className="flex-1 flex flex-col h-screen adminWidth">
           {/* Header */}
           <header className="p-4 bg-slate-700 text-white w-full">
             <h1>My Next.js App</h1>
           </header>
 
           {/* Main content */}
-          <main className="p-8 flex-1 overflow-auto">{children}</main>
+          <main className="p-8 flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
         </div>
       </div>
 

@@ -75,7 +75,7 @@ export default function CreateProduct() {
                             <input type="text" id="weight" className="bg-slate-100 rounded-md outline-none p-3 py-1" />
                         </div>
 
-                        <div className="flex gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                             <div className="flex flex-col gap-1 flex-1">
                                 <label htmlFor="width" className="uppercase cursor-pointer">Width</label>
                                 <input type="text" id="width" className="bg-slate-100 rounded-md outline-none p-3 py-1" />
