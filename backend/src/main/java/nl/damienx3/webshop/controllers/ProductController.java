@@ -1,16 +1,14 @@
 package nl.damienx3.webshop.controllers;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +38,7 @@ public class ProductController {
         List<Product> products = productRepository.findAll();
 
         if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.error("No products found"));
+            return ResponseEntity.ok(Response.error("No products"));
         }
 
         return ResponseEntity.ok(Response.success("Got products", products));
@@ -57,26 +55,23 @@ public class ProductController {
             return ResponseEntity.ok(Response.success(message, product));
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.error("Product doesn't exist"));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Response.error("Product doesn't exist"));
     }
 
     @PostMapping
-    public ResponseEntity<Response> saveProduct(@Valid @RequestBody(required = false) Product product,
-            BindingResult bindingResult) {
+    public ResponseEntity<Response> saveProduct(@Valid @RequestBody(required = false) Product product) {
+        if (product == null) {
+            return ResponseEntity
+                    .status(HttpStatus.PRECONDITION_FAILED)
+                    .body(Response.error("Product information is missing"));
+        }
+
         try {
-            if (product == null) {
-                return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
-                        .body(Response.error("Product information is missing"));
-            }
-
-            // TODO: Fix error handling
-            if (bindingResult.hasFieldErrors()) {
-                List<String> errors = bindingResult.getFieldErrors().stream()
-                        .map(error -> error.getField() + " " + error.getDefaultMessage())
-                        .collect(Collectors.toList());
-
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Response.error("Failed to save product", errors));
+            if (product.getSku() == null || product.getSku().isBlank()) {
+                long id = productRepository.getNextId();
+                product.generateSku(id);
             }
 
             product = productRepository.save(product);
@@ -85,11 +80,20 @@ public class ProductController {
                 return ResponseEntity.ok(Response.success("Product saved", product));
             }
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Response.error("Failed to save product", e.getMessage()));
+            HashMap<Object, String> errors = new HashMap<>();
+
+            if (product.getTitle() == null || product.getTitle().isBlank()) {
+                errors.put("title", "Product must have a title");
+            }
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Response.error("Failed to save product", errors));
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.error("Failed to save product"));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Response.error("Failed to save product"));
     }
 
     @PutMapping("{id}")
@@ -106,7 +110,9 @@ public class ProductController {
             return ResponseEntity.ok(Response.success(message, product));
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.error("Product doesn't exist"));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Response.error("Product doesn't exist"));
     }
 
     @DeleteMapping("{id}")
@@ -121,7 +127,9 @@ public class ProductController {
             return ResponseEntity.ok(Response.success("Product deleted"));
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.error("Product doesn't exist"));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Response.error("Product doesn't exist"));
     }
 
     private void updateFields(Product product, Product request) {

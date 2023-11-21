@@ -14,6 +14,9 @@ public class Response {
     @JsonProperty
     private Object data;
 
+    @JsonProperty
+    private Object errors;
+
     public Response(String message) {
         this.message = message;
     }
@@ -33,6 +36,10 @@ public class Response {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public void setErrors(Object errors) {
+        this.errors = errors;
     }
 
     public static Response success(String message) {
@@ -56,9 +63,9 @@ public class Response {
         return response;
     }
 
-    public static Response error(String message, Object data) {
+    public static Response error(String message, Object errors) {
         Response response = error(message);
-        response.setData(data);
+        response.setErrors(errors);
 
         return response;
     }

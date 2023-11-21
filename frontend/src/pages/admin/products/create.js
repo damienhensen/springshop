@@ -1,4 +1,4 @@
-import Layout from "@/components/AdminLayout";
+import Layout from "@/components/admin/layout";
 import FormSection from "@/components/admin/formSection";
 import { useRef } from "react";
 import PlaceholderImage from "@/assets/image/placeholder.png";

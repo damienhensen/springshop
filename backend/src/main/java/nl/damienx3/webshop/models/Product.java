@@ -1,8 +1,7 @@
 package nl.damienx3.webshop.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-import javax.validation.constraints.NotBlank;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,24 +12,21 @@ import jakarta.persistence.Id;
 @Entity
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(unique = true, nullable = false)
-    @NotBlank(message = "Product must have an SKU")
     private String sku;
 
     private String image;
 
     @Column(nullable = false)
-    @NotBlank(message = "Product must have a title")
     private String title;
     private String description;
 
     private double price;
     private int stock;
 
-    @Column(nullable = false)
     private Status status;
     private LocalDateTime publishAt;
 
@@ -50,6 +46,10 @@ public class Product {
 
     public Product() {
         this.status = Status.HIDDEN;
+    }
+
+    public void generateSku(long id) {
+        this.sku = String.format("P%05d", id);
     }
 
     public long getId() {

@@ -1,4 +1,4 @@
-import Layout from "@/components/AdminLayout";
+import Layout from "@/components/admin/layout";
 import InfoCard from "@/components/admin/infoCard";
 
 export default function Dashboard() {
