@@ -1,50 +1,42 @@
-package nl.damienx3.webshop.models;
+package nl.damienx3.webshop.DTOs;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.Nullable;
 
-@Entity
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+import org.springframework.web.multipart.MultipartFile;
+
+import nl.damienx3.webshop.models.Product;
+
+public class ProductDTO {
     private long id;
-
-    @Column(unique = true, nullable = false)
     private String sku;
-
-    private String image;
-
-    @Column(nullable = false)
     private String title;
     private String description;
-
     private double price;
     private int stock;
-
-    private Status status;
-    private LocalDateTime publishAt;
-
+    private Product.Status status;
     private double weight;
     private double width;
     private double length;
     private double height;
-
     private double salePrice;
+
+    @Nullable
+    private MultipartFile image;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime publishAt;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime saleStart;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime saleEnd;
 
-    public enum Status {
-        HIDDEN,
-        PUBLIC
-    };
-
-    public Product() {
-        this.status = Status.HIDDEN;
+    public ProductDTO() {
+        this.status = Product.Status.HIDDEN;
     }
 
     public void generateSku(long id) {
@@ -59,7 +51,7 @@ public class Product {
         return sku;
     }
 
-    public String getImage() {
+    public MultipartFile getImage() {
         return image;
     }
 
@@ -79,7 +71,7 @@ public class Product {
         return stock;
     }
 
-    public Status getStatus() {
+    public Product.Status getStatus() {
         return status;
     }
 
@@ -119,7 +111,7 @@ public class Product {
         this.sku = sku;
     }
 
-    public void setImage(String image) {
+    public void setImage(MultipartFile image) {
         this.image = image;
     }
 
@@ -139,7 +131,7 @@ public class Product {
         this.stock = stock;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(Product.Status status) {
         this.status = status;
     }
 
@@ -173,5 +165,25 @@ public class Product {
 
     public void setSaleEnd(LocalDateTime saleEnd) {
         this.saleEnd = saleEnd;
+    }
+
+    public Product toProduct() {
+        Product product = new Product();
+        product.setSku(sku);
+        product.setTitle(title);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setStock(stock);
+        product.setStatus(status);
+        product.setPublishAt(publishAt);
+        product.setWeight(weight);
+        product.setWidth(width);
+        product.setLength(length);
+        product.setHeight(height);
+        product.setSalePrice(salePrice);
+        product.setSaleStart(saleStart);
+        product.setSaleEnd(saleEnd);
+
+        return product;
     }
 }

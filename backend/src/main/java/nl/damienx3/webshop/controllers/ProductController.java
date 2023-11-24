@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,12 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.transaction.Transactional;
+import nl.damienx3.webshop.DTOs.ProductDTO;
 import nl.damienx3.webshop.models.Product;
 import nl.damienx3.webshop.models.Response;
 import nl.damienx3.webshop.repositories.ProductRepository;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
 public class ProductController {
     private ProductRepository productRepository;
 
@@ -33,7 +35,7 @@ public class ProductController {
         this.productRepository = productRepository;
     }
 
-    @GetMapping(produces = "application/json")
+    @GetMapping
     public ResponseEntity<Response> getProducts() {
         List<Product> products = productRepository.findAll();
 
@@ -61,7 +63,8 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> saveProduct(@Valid @RequestBody(required = false) Product product) {
+    @Transactional
+    public ResponseEntity<Response> saveProduct(@ModelAttribute @Valid ProductDTO product) {
         if (product == null) {
             return ResponseEntity
                     .status(HttpStatus.PRECONDITION_FAILED)
@@ -74,10 +77,11 @@ public class ProductController {
                 product.generateSku(id);
             }
 
-            product = productRepository.save(product);
+            Product realProduct = product.toProduct();
+            realProduct = productRepository.save(realProduct);
 
-            if (product.getId() > 0) {
-                return ResponseEntity.ok(Response.success("Product saved", product));
+            if (realProduct.getId() > 0) {
+                return ResponseEntity.ok(Response.success("Product saved", realProduct));
             }
         } catch (DataIntegrityViolationException e) {
             HashMap<Object, String> errors = new HashMap<>();
