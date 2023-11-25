@@ -1,16 +1,12 @@
 package nl.damienx3.webshop.controllers;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,23 +25,18 @@ import nl.damienx3.webshop.DTOs.ProductDTO;
 import nl.damienx3.webshop.models.Product;
 import nl.damienx3.webshop.models.Response;
 import nl.damienx3.webshop.repositories.ProductRepository;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import nl.damienx3.webshop.services.S3;
 
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
     private ProductRepository productRepository;
+    private S3 s3;
 
     @Autowired
-    private Environment env;
-
-    @Autowired
-    public ProductController(ProductRepository productRepository) {
+    public ProductController(ProductRepository productRepository, S3 s3) {
         this.productRepository = productRepository;
+        this.s3 = s3;
     }
 
     @GetMapping
@@ -90,33 +81,11 @@ public class ProductController {
                 product.generateSku(id);
             }
 
-            String key = "products/" + LocalDateTime.now().getNano()
-                    + "." + FilenameUtils.getExtension(product.getImage().getOriginalFilename());
-
-            if (product.getImage().getSize() > 0) {
-                String accessKeyId = env.getProperty("aws.access_key");
-                String secretAccessKey = env.getProperty("aws.secret_key");
-                String bucketName = env.getProperty("aws.bucket_name");
-
-                AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
-
-                S3Client s3Client = S3Client.builder()
-                        .region(Region.EU_WEST_2)
-                        .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                        .build();
-
-                File file = product.getImageFile();
-
-                s3Client.putObject(PutObjectRequest.builder()
-                        .bucket(bucketName)
-                        .key(key)
-                        .build(), file.toPath());
-            }
-
             Product realProduct = product.toProduct();
 
             if (product.getImage().getSize() > 0) {
-                realProduct.setImage(env.getProperty("aws.cloudfront_url") + key);
+                String imagePath = s3.saveObject(product.getImage(), "products");
+                realProduct.setImage(imagePath);
             }
 
             realProduct = productRepository.save(realProduct);
