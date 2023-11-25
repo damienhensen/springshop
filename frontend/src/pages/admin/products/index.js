@@ -2,6 +2,7 @@ import Layout from "@/components/admin/layout";
 import FormSection from "@/components/admin/formSection";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function CreateProduct() {
     const [products, setProducts] = useState(null);
@@ -35,6 +36,9 @@ export default function CreateProduct() {
                             <div className="flex-1 flex flex-col">
                                 <div className="grid grid-cols-12">
                                     <div className="col-span-2">
+                                        <h3>Image</h3>
+                                    </div>
+                                    <div className="col-span-2">
                                         <h3>SKU</h3>
                                     </div>
                                     <div className="col-span-2">
@@ -44,6 +48,9 @@ export default function CreateProduct() {
                                 {products.data.map(product => {
                                     return (
                                         <div className="grid grid-cols-12">
+                                            <div className="col-span-2">
+                                                <Image src={product.image} width={100} height={100} />
+                                            </div>
                                             <div className="col-span-2">
                                                 <h3>{product.sku}</h3>
                                             </div>

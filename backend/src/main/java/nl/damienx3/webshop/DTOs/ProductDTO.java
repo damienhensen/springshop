@@ -1,5 +1,9 @@
 package nl.damienx3.webshop.DTOs;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -185,5 +189,20 @@ public class ProductDTO {
         product.setSaleEnd(saleEnd);
 
         return product;
+    }
+
+    public File getImageFile() throws IOException {
+        // Create a temporary file
+        File file = File.createTempFile("temp", null);
+
+        // Copy the contents of the MultipartFile to the temporary file
+        try {
+            Files.copy(image.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            // Handle the exception, e.g., log it or throw a custom exception
+            e.printStackTrace();
+            throw e;
+        }
     }
 }
