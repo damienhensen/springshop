@@ -83,7 +83,7 @@ public class ProductController {
 
             Product realProduct = product.toProduct();
 
-            if (product.getImage().getSize() > 0) {
+            if (product.getImage() != null && product.getImage().getSize() > 0) {
                 String imagePath = s3.saveObject(product.getImage(), "products");
                 realProduct.setImage(imagePath);
             }
@@ -112,7 +112,8 @@ public class ProductController {
 
     @PutMapping("{id}")
     @Transactional
-    public ResponseEntity<Response> updateProduct(@PathVariable long id, @RequestBody Product request) {
+    public ResponseEntity<Response> updateProduct(@PathVariable long id, @ModelAttribute @Valid ProductDTO request)
+            throws IOException {
         Optional<Product> optionalProduct = productRepository.findById(id);
 
         if (optionalProduct.isPresent()) {
@@ -127,6 +128,13 @@ public class ProductController {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Response.error("Product doesn't exist"));
+    }
+
+    @DeleteMapping
+    @Transactional
+    public ResponseEntity<Response> deleteProducts(@RequestBody Iterable<Long> ids) {
+        productRepository.deleteAllById(ids);
+        return ResponseEntity.ok(Response.success("Product deleted", productRepository.findAll()));
     }
 
     @DeleteMapping("{id}")
@@ -146,10 +154,14 @@ public class ProductController {
                 .body(Response.error("Product doesn't exist"));
     }
 
-    private void updateFields(Product product, Product request) {
+    private void updateFields(Product product, ProductDTO request) throws IOException {
         product.setSku(request.getSku());
 
-        product.setImage(request.getImage());
+        if (request.getImage() != null && request.getImage().getSize() > 0) {
+            String imagePath = s3.saveObject(request.getImage(), "products");
+            product.setImage(imagePath);
+        }
+
         product.setTitle(request.getTitle());
         product.setDescription(request.getDescription());
 

@@ -1,4 +1,4 @@
-package nl.damienx3.webshop;
+package nl.damienx3.webshop.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

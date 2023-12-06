@@ -1,5 +1,8 @@
-import "@/app/globals.css"
 import Link from "next/link"
+import { ToastContainer } from "react-toastify";
+
+import 'react-toastify/dist/ReactToastify.css';
+import "@/app/globals.css"
 
 export default function Layout({ children }) {
   return (
@@ -24,6 +27,8 @@ export default function Layout({ children }) {
 
           {/* Main content */}
           <main className="p-8 flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
+
+          <ToastContainer />
         </div>
       </div>
 

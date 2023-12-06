@@ -12,3 +12,8 @@ body {
 .adminWidth {
     width: calc(100% - 16rem);
 }
+
+.Toastify__toast-container--top-right {
+    top: 5.25em;
+    right: calc(3rem - 4px);
+}

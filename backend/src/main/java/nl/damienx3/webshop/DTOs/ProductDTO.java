@@ -1,9 +1,5 @@
 package nl.damienx3.webshop.DTOs;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
