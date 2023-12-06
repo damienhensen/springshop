@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.transaction.Transactional;
 import nl.damienx3.webshop.DTOs.ProductDTO;
+import nl.damienx3.webshop.annotations.AdminOnly;
 import nl.damienx3.webshop.models.Product;
 import nl.damienx3.webshop.models.Response;
 import nl.damienx3.webshop.repositories.ProductRepository;
@@ -68,6 +69,7 @@ public class ProductController {
 
     @PostMapping
     @Transactional
+    @AdminOnly
     public ResponseEntity<Response> saveProduct(@ModelAttribute @Valid ProductDTO product) throws IOException {
         if (product == null) {
             return ResponseEntity
@@ -112,6 +114,7 @@ public class ProductController {
 
     @PutMapping("{id}")
     @Transactional
+    @AdminOnly
     public ResponseEntity<Response> updateProduct(@PathVariable long id, @ModelAttribute @Valid ProductDTO request)
             throws IOException {
         Optional<Product> optionalProduct = productRepository.findById(id);
@@ -132,6 +135,7 @@ public class ProductController {
 
     @DeleteMapping
     @Transactional
+    @AdminOnly
     public ResponseEntity<Response> deleteProducts(@RequestBody Iterable<Long> ids) {
         productRepository.deleteAllById(ids);
         return ResponseEntity.ok(Response.success("Product deleted", productRepository.findAll()));
@@ -139,6 +143,7 @@ public class ProductController {
 
     @DeleteMapping("{id}")
     @Transactional
+    @AdminOnly
     public ResponseEntity<Response> deleteProduct(@PathVariable long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
 
