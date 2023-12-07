@@ -1,42 +1,31 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
 import generalReducer from "./general/reducers";
 import adminReducer from "./admin/reducers";
 import authReducer from "./auth/reducers";
 
-const STATE_KEY = "redux";
+const persistConfig = {
+    key: "redux",
+    storage
+}
 
-const saveToLocalStorage = (state) => {
-    try {
-        const serializedState = JSON.stringify(state);
-        localStorage.setItem(STATE_KEY, serializedState);
-    } catch (e) {
-        console.error('Error saving state to localStorage:', e);
-    }
+const reducers = {
+    general: generalReducer,
+    admin: adminReducer,
+    auth: authReducer,
 };
 
-const loadFromLocalStorage = () => {
-    try {
-        const serializedState = localStorage.getItem(STATE_KEY);
-        if (serializedState === null) return undefined;
-        return JSON.parse(serializedState);
-    } catch (e) {
-        console.error('Error loading state from localStorage:', e);
-        return undefined;
-    }
-};
+const rootReducer = combineReducers(reducers);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const persistedState = loadFromLocalStorage();
-
-const store = configureStore({
-    reducer: {
-        general: generalReducer,
-        admin: adminReducer,
-        auth: authReducer,
-    },
-    preloadedState: persistedState
+export const store = configureStore({
+    reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+        serializableCheck: false
+    }),
 });
 
-store.subscribe(() => saveToLocalStorage(store.getState()));
-
-export default store;
+export const persistor = persistStore(store);

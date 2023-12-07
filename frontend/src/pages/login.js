@@ -1,41 +1,34 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import { setStoreUser } from "@/redux/auth/actions";
+import { setStoreUser, showToast } from "@/redux/auth/actions";
 import { startLoading, stopLoading } from "@/redux/general/actions";
 
 import { AuthAdaptor } from "@/services/AuthAdaptor";
 
 import Layout from "@/components/layout";
-import Loading from "@/components/loading";
 
-const mapStateToProps = (state) => ({
-    storeUser: state.auth.user,
-    loading: state.general.loading
-});
-
-const mapDispatchToProps = {
-    setStoreUser,
-    startLoading,
-    stopLoading,
-}
-
-const Login = ({ storeUser, loading, setStoreUser, startLoading, stopLoading }) => {
+const Login = () => {
     const router = useRouter();
+    const dispatch = useDispatch();
     const authAdaptor = new AuthAdaptor("");
+
+    const storeUser = useSelector((state) => state.auth.user);
+
     const [user, setUser] = useState({
         email: "",
         password: "",
     });
 
     const tryLogin = async () => {
-        startLoading();
+        dispatch(startLoading());
         await authAdaptor.login(user)
             .then(response => {
-                setStoreUser(response.data);
-                stopLoading();
+                dispatch(setStoreUser(response.data));
+                dispatch(stopLoading());
+                dispatch(showToast("Logged in!"));
             })
             .catch(console.error);
     }
@@ -52,10 +45,8 @@ const Login = ({ storeUser, loading, setStoreUser, startLoading, stopLoading }) 
 
     return (
         <Layout>
-            {loading ? <Loading /> : <></>}
-
             <h1 className="font-bold text-2xl uppercase mb-8">Login</h1>
-            
+
             <input type="text" onChange={(evt) => setUser({ ...user, email: evt.target.value })} />
             <input type="text" onChange={(evt) => setUser({ ...user, password: evt.target.value })} />
             <button onClick={tryLogin}>login</button>
@@ -63,4 +54,4 @@ const Login = ({ storeUser, loading, setStoreUser, startLoading, stopLoading }) 
     );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default Login;

@@ -12,6 +12,14 @@ export const setStoreUser = (jwt) => ({
 });
 
 export const logoutUser = () => ({
-    type: "SET_USER",
-    user: {},
+    type: "LOGOUT_USER",
+});
+
+export const showToast = (msg) => ({
+    type: "SHOW_TOAST",
+    message: msg
+});
+
+export const hideToast = () => ({
+    type: "HIDE_TOAST",
 });
