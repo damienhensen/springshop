@@ -30,7 +30,7 @@ export class ProductAdaptor extends Adaptor {
             body: formData
         };
 
-        return await super.sendRequest(this.path, data);
+        return await this.sendRequest(this.path, data);
     }
 
     async update(id, product, imageFile = null) {

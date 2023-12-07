@@ -1,7 +1,7 @@
 import Layout from "@/components/admin/layout";
 import InfoCard from "@/components/admin/infoCard";
 
-export default function Dashboard() {
+const Dashboard = () => {
     return (
         <Layout>
             <h1 className="font-bold text-2xl uppercase mb-8">Dashboard</h1>
@@ -15,3 +15,5 @@ export default function Dashboard() {
         </Layout>
     );
 }
+
+export default Dashboard;

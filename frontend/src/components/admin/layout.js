@@ -1,10 +1,30 @@
-import Link from "next/link"
+import "@/app/globals.css";
+import 'react-toastify/dist/ReactToastify.css';
+
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+
+import { connect } from "react-redux";
 import { ToastContainer } from "react-toastify";
 
-import 'react-toastify/dist/ReactToastify.css';
-import "@/app/globals.css"
+const mapStateToProps = (state) => ({
+  storeUser: state.auth.user,
+});
 
-export default function Layout({ children }) {
+const AuthLayout = ({ children, storeUser }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (storeUser.role) {
+      if (storeUser.role != "ADMIN") {
+        router.push("/");
+      }
+    } else {
+      router.push("/login")
+    }
+  }, [storeUser, router]);
+
   return (
     <div className="flex flex-col h-screen bg-slate-100 overflow-hidden">
       <div className="flex-1 flex">
@@ -35,3 +55,5 @@ export default function Layout({ children }) {
     </div>
   );
 };
+
+export default connect(mapStateToProps, null)(AuthLayout);
