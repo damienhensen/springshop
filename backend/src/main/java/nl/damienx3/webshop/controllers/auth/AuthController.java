@@ -29,8 +29,8 @@ public class AuthController {
         this.encoder = new Security().getEncoder();
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<Response> register(@RequestBody User user) {
+    @PostMapping("/sign-up")
+    public ResponseEntity<Response> signUp(@RequestBody User user) {
         Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
 
         if (optionalUser.isEmpty()) {
@@ -38,16 +38,18 @@ public class AuthController {
             user = userRepository.save(user);
 
             String jwtToken = JWT.generateToken(user.getId(), user.getRole());
-            return ResponseEntity.ok(Response.success("Registered successfully", jwtToken));
+            return ResponseEntity.ok(Response.success("Signed up successfully", jwtToken));
+        } else {
+
         }
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(Response.error("User already registered"));
+                .status(HttpStatus.CONFLICT)
+                .body(Response.error("User already signed up"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Response> login(@RequestBody User user) {
+    public ResponseEntity<Response> logIn(@RequestBody User user) {
         Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
 
         if (optionalUser.isPresent()) {

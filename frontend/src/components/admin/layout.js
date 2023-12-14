@@ -5,25 +5,43 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-import { connect } from "react-redux";
-import { ToastContainer } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import { stopLoading } from "@/redux/general/actions";
 
-const mapStateToProps = (state) => ({
-  storeUser: state.auth.user,
-});
-
-const AuthLayout = ({ children, storeUser }) => {
+const AuthLayout = ({ children }) => {
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.auth.user);
+  const toastType = useSelector((state) => state.auth.toastType);
+  const toastMessage = useSelector((state) => state.auth.toastMessage);
 
   useEffect(() => {
-    if (storeUser.role) {
-      if (storeUser.role != "ADMIN") {
+    if (user.role) {
+      if (user.role != "ADMIN") {
         router.push("/");
       }
     } else {
       router.push("/login")
     }
-  }, [storeUser, router]);
+
+    dispatch(stopLoading());
+  }, [user, router]);
+
+  useEffect(() => {
+    switch (toastType) {
+      case "error":
+        toast.error(toastMessage);
+        break;
+      case "info":
+        toast.info(toastMessage);
+        break;
+      default:
+        toast.success(toastMessage);
+        break;
+    }
+  }, [toastType, toastMessage]);
 
   return (
     <div className="flex flex-col h-screen bg-slate-100 overflow-hidden">
@@ -56,4 +74,4 @@ const AuthLayout = ({ children, storeUser }) => {
   );
 };
 
-export default connect(mapStateToProps, null)(AuthLayout);
+export default AuthLayout;

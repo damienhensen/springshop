@@ -6,19 +6,19 @@ export class Adaptor {
     }
 
     async sendRequest(path, data = null) {
+        const response = await fetch(process.env.NEXT_PUBLIC_API_URL + path, data);
+
+        let responseBody;
+
         try {
-            const response = await fetch(process.env.NEXT_PUBLIC_API_URL + path, data);
-
-            if (!response.ok) {
-                console.error(`Server returned an error: ${response.status}`);
-                throw new Error('Failed to fetch data');
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error('Error during fetch:', error);
-            throw error;
+            // Attempt to parse the response body as JSON
+            responseBody = await response.json();
+        } catch (jsonError) {
+            // If parsing as JSON fails, fallback to reading response as text
+            responseBody = await response.text();
         }
+
+        return responseBody;
     }
 
     async findAll() {

@@ -16,6 +16,7 @@ public class UserSeeder implements CommandLineRunner {
 
     @Autowired
     public UserSeeder(UserRepository userRepository) {
+        System.out.println("Seeding users...");
         this.userRepository = userRepository;
     }
 
@@ -26,5 +27,7 @@ public class UserSeeder implements CommandLineRunner {
         List<User> users = List.of(admin, customer);
 
         userRepository.saveAll(users);
+
+        System.out.println("Users seeded");
     }
 }

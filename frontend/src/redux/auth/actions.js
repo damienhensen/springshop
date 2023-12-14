@@ -8,6 +8,7 @@ export const parseJWT = (jwt) => {
 
 export const setStoreUser = (jwt) => ({
     type: "SET_USER",
+    token: jwt,
     user: parseJWT(jwt),
 });
 
@@ -15,11 +16,8 @@ export const logoutUser = () => ({
     type: "LOGOUT_USER",
 });
 
-export const showToast = (msg) => ({
+export const showToast = (msg, type = "success") => ({
     type: "SHOW_TOAST",
-    message: msg
-});
-
-export const hideToast = () => ({
-    type: "HIDE_TOAST",
+    message: msg,
+    toastType: type
 });

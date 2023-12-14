@@ -21,10 +21,10 @@ const Header = () => {
             <Link href="/">Home</Link>
 
             <nav className="flex justify-between items-center gap-4">
-                {!isAuthenticated && <Link href="/login">Login</Link>}
-                {!isAuthenticated && <Link href="/register">Register</Link>}
+                {!isAuthenticated && <Link href="/login">Log in</Link>}
+                {!isAuthenticated && <Link href="/sign-up">Sign up</Link>}
                 {isAuthenticated && userRole === "ADMIN" && <Link href="/admin">Admin Dashboard</Link>}
-                {isAuthenticated && <button onClick={logout}>logout</button>}
+                {isAuthenticated && <button onClick={logout}>Log out</button>}
             </nav>
         </header>
     )

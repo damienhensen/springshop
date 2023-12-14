@@ -5,7 +5,7 @@ export class AuthAdaptor extends Adaptor {
         super(resourceUrl);
     }
 
-    async register(user) {
+    async signUp(user) {
         const data = {
             method: "POST",
             headers: {
@@ -14,7 +14,7 @@ export class AuthAdaptor extends Adaptor {
             body: JSON.stringify(user)
         }
 
-        return await this.sendRequest(this.path + "/register", data);
+        return await this.sendRequest(this.path + "/sign-up", data);
     }
 
     async login(user) {
